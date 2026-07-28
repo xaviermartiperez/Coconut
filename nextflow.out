@@ -1,0 +1,194 @@
+[33mNextflow 25.04.6 is available - Please consider updating your version to it(B[m
+
+ N E X T F L O W   ~  version 24.10.2
+
+Launching `coconut.nf` [romantic_rosalind] DSL2 - revision: 73350f6815
+
+P A L M  /  J - P A L M   W O R K F L O W
+=========================================
+Mode        : PALM
+Population  : IBS
+Assembly    : hg19
+GWAS list   : gwas_of_gcat_list.txt
+Relate      : /homes/users/xmarti/scratch/gcat/relate_snps_IBS.rds
+
+Max. p-val  : 0.000005
+
+[-        ] Unlist_GWAS          -
+[-        ] Format_GWAS          -
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[-        ] Format_GWAS          | 0 of 9
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (1)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[4e/097df1] Format_GWAS (2)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (2)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[73/677041] Format_GWAS (1)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (3)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[3c/ac22ea] Format_GWAS (3)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (4)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[2a/352c72] Format_GWAS (4)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (5)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[bc/bf2f6f] Format_GWAS (5)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (6)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[50/dba25b] Format_GWAS (7)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (7)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[b6/07847e] Format_GWAS (6)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (8)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[3f/eb49d7] Format_GWAS (8)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (9)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[2a/224a25] Format_GWAS (10)     | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (10)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[b3/20a7d8] Format_GWAS (9)      | 0 of 38
+[-        ] Fix_Sumstats         -
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+
+executor >  slurm (11)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[73/677041] Format_GWAS (1)      | 3 of 38
+[-        ] Fix_Sumstats         | 0 of 3
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+ERROR ~ Error executing process > 'Format_GWAS (7)'
+
+Caused by:
+  Process `Format_GWAS (7)` terminated with an error exit status (132)
+
+
+Command executed:
+
+  #mkdir -p gwas_of_gcat
+  format_gwas.R gwas_15.txt gwas_of_gcat hm3_SNPs_variant_id_hg38.tsv hm3_SNPs_variant_id_hg19.tsv
+
+Command exit status:
+  132
+
+Command output:
+  (empty)
+
+Command error:
+  Loading required package: dplyr
+  
+  Attaching package: ‘dplyr’
+  
+  The following objects are masked from ‘package:stats’:
+  
+      filter, lag
+  
+  The following objects are masked from ‘package:base’:
+  
+      intersect, setdiff, setequal, union
+  
+  Loading required package: stringr
+  Loading required package: tidyverse
+
+Work dir:
+  /homes/users/xmarti/scratch/gcat/work/50/dba25bc490718233a35c81deca5512
+
+Tip: you can replicate the issue by changing to the process work dir and entering the command `bash .command.run`
+
+ -- Check '.nextflow.log' file for details
+
+Oops... something went wrong
+
+WARN: Killing running tasks (5)
+
+executor >  slurm (11)
+[e4/4c399e] Unlist_GWAS          | 1 of 1, cached: 1 ✔
+[da/47a10a] Format_GWAS (11)     | 6 of 38, failed: 1
+[-        ] Fix_Sumstats         | 0 of 5
+[-        ] Add_Filter_LD_blocks -
+[-        ] LiftOver             -
+ERROR ~ Error executing process > 'Format_GWAS (7)'
+
+Caused by:
+  Process `Format_GWAS (7)` terminated with an error exit status (132)
+
+
+Command executed:
+
+  #mkdir -p gwas_of_gcat
+  format_gwas.R gwas_15.txt gwas_of_gcat hm3_SNPs_variant_id_hg38.tsv hm3_SNPs_variant_id_hg19.tsv
+
+Command exit status:
+  132
+
+Command output:
+  (empty)
+
+Command error:
+  Loading required package: dplyr
+  
+  Attaching package: ‘dplyr’
+  
+  The following objects are masked from ‘package:stats’:
+  
+      filter, lag
+  
+  The following objects are masked from ‘package:base’:
+  
+      intersect, setdiff, setequal, union
+  
+  Loading required package: stringr
+  Loading required package: tidyverse
+
+Work dir:
+  /homes/users/xmarti/scratch/gcat/work/50/dba25bc490718233a35c81deca5512
+
+Tip: you can replicate the issue by changing to the process work dir and entering the command `bash .command.run`
+
+ -- Check '.nextflow.log' file for details
+
