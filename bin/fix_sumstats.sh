@@ -51,7 +51,7 @@ else
 
     for CHR in {1..22}; do
         #Name the appropriate dbSNP dataset for this chromosome
-        VCF_FILE="${VCF_DIR}/ALL.chr${CHR}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
+        VCF_FILE="${VCF_DIR}/GCF_000001405.40.gz.chr${CHR}.vcf.gz"
 
         OUT="vcf_data_chr${CHR}.tsv.tmp"
 
