@@ -8,10 +8,13 @@ params.analysis = "PALM" // Options: PALM, JPALM
 params.GWAS_list = "gwas_of_gcat_list.txt"
 params.GWAS_dir = "gwas_of_gcat"
 params.population = "IBS"
-params.maxp = 5e-6
+params.maxp = 5e-8
 // The assembly version refers to the one of the Relate data, the one
 // that the GWAS must be in the end
 params.version = "hg19" // Options: hg19, hg38
+// Minimum number of SNPs in the GWAS to be considered for analysis
+params.min_SI_SNPs = 25
+params.N_per_batch = 10
 
 // Define directories
 params.workDir = "/homes/users/${params.user}/scratch/gcat"
@@ -34,7 +37,7 @@ params.GWAS_list_file = "${params.workDir}/${params.GWAS_list}"
 
 // Define LDSC-related tools, files and directories
 // IT IS CRITICAL THAT LDSC DIR IS IN BRANCH 2-TO-3
-params.LDSC = "${params.LDSCDir}/eur_w_ld_chr" // WHY NO hg19 - hg38 VERSION SPECIFICATION??
+params.LDSC = "${params.LDSCDir}/eur_w_ld_chr"
 params.MungeTool = "${LDSC_ToolDir}/munge_sumstats.py"
 params.LDSC_Tool = "${LDSC_ToolDir}/ldsc.py"
 // Hapmap3 SNP file must be defined in this manner because each GWAS may require a different version
@@ -50,21 +53,24 @@ params.LiftOverChain = (params.version == "hg38") ? "${params.LiftOverDir}/hg19T
                        (params.version == "hg19") ? "${params.LiftOverDir}/hg38ToHg19.over.chain" : null
 
 // Define RELATE-related tools, files and directories
+
+// Relate SNPs files are obtained through helper pipeline
 Relate_SNPs = (params.version == "hg19") ? "${params.workDir}/relate_snps_${params.population}.rds" :
               (params.version == "hg38") ? "${params.workDir}/relate_snps_${params.population}_hg38.rds" : null
+// Relate anc_mut and coal files should already have been obtained by the user           
 Relate_coal = (params.version == "hg19") ? "${params.workDir}/relate/${params.population}/coal/${params.population}.coal" : 
               (params.version == "hg38") ? "${params.workDir}/relate/${params.population}_hg38/coal/${params.population}_hg38.coal" : null
 Relate_anc_mut = (params.version == "hg19") ? "${params.workDir}/relate/${params.population}/anc_mut" : 
                  (params.version == "hg38") ? "${params.workDir}/relate/${params.population}_hg38/anc_mut" : null
+
+// SampleBranchLengths_custom.sh is provided in the Coconut repository
 params.SBL_Tool = "${Relate_ToolDir}/SampleBranchLengths_custom.sh"
 
 // Define PALM-related tools and directories
 params.Lik_Tool = "${PALM_ToolDir}/lik.py"
+// palm_custom.py is provided in the Coconut repository
 params.PALM_Tool = "${PALM_ToolDir}/palm_custom.py"
 
-// Other numerical parameters
-params.N_per_batch = 10
-params.min_SI_SNPs = 25
 
 log.info """\
     P A L M  /  J - P A L M   W O R K F L O W
@@ -562,31 +568,31 @@ workflow {
     
     Lifted_GWAS_ch = LiftOver(Add_Filter_LD_blocks_ch, params.GWAS_raw_dir, params.LiftOverTool, params.LiftOverChain, params.version)
     
-    //if (params.analysis == "JPALM") {
-     //   GWAS_N_ch = Obtain_N_Comparisons(Add_Filter_LD_blocks_ch.collect())
-      //  GWAS_Pairs_ch = Obtain_GWAS_Pairs(Add_Filter_LD_blocks_ch.collect())
-       // Sumstats_ch = Munge_Sumstats(Add_Filter_LD_blocks_ch, params.GWAS_raw_dir, workflow.projectDir, params.LDSC)
-        //RG_ch = Genetic_Correlation(Sumstats_ch.collect(), GWAS_Pairs_ch.flatten(), GWAS_N_ch, workflow.projectDir, params.LDSC)
-        //SNPs_ch = SelectSNPs_JPALM_lifted(Lifted_GWAS_ch.collect(), RG_ch.flatten(), Relate_SNPs, params.GWAS_raw_dir, params.maxp, params.version)
-    //} else if (params.analysis == "PALM") {
-    //    SNPs_ch = SelectSNPs(Relate_SNPs, Lifted_GWAS_ch, params.GWAS_raw_dir)
-    //} else {
-    //    log.info "Analysis parameter must be either PALM or JPALM"
-    //    exit 1
-    //}
+    if (params.analysis == "JPALM") {
+        GWAS_N_ch = Obtain_N_Comparisons(Add_Filter_LD_blocks_ch.collect())
+        GWAS_Pairs_ch = Obtain_GWAS_Pairs(Add_Filter_LD_blocks_ch.collect())
+        Sumstats_ch = Munge_Sumstats(Add_Filter_LD_blocks_ch, params.GWAS_raw_dir, workflow.projectDir, params.LDSC)
+        RG_ch = Genetic_Correlation(Sumstats_ch.collect(), GWAS_Pairs_ch.flatten(), GWAS_N_ch, workflow.projectDir, params.LDSC)
+        SNPs_ch = SelectSNPs_JPALM_lifted(Lifted_GWAS_ch.collect(), RG_ch.flatten(), Relate_SNPs, params.GWAS_raw_dir, params.maxp, params.version)
+    } else if (params.analysis == "PALM") {
+        SNPs_ch = SelectSNPs(Relate_SNPs, Lifted_GWAS_ch, params.GWAS_raw_dir)
+    } else {
+        log.info "Analysis parameter must be either PALM or JPALM"
+        exit 1
+    }
 
-    //Merged_SNPs_ch = MergeSNPs(SNPs_ch.collect())
-    //Trimmed_SNPs_ch = TrimSNPs(Merged_SNPs_ch, params.maxp, params.analysis, params.N_per_batch)
-    //SBL_Lik_ch = SBL_and_SNP_Likelihood(Trimmed_SNPs_ch.flatten(), params.population, params.SBL_Tool, params.Lik_Tool, Relate_coal, Relate_anc_mut, likDir)
+    Merged_SNPs_ch = MergeSNPs(SNPs_ch.collect())
+    Trimmed_SNPs_ch = TrimSNPs(Merged_SNPs_ch, params.maxp, params.analysis, params.N_per_batch)
+    SBL_Lik_ch = SBL_and_SNP_Likelihood(Trimmed_SNPs_ch.flatten(), params.population, params.SBL_Tool, params.Lik_Tool, Relate_coal, Relate_anc_mut, likDir)
     
-    //if (params.analysis == "PALM") {
-    //    PALM_ch = Apply_PALM(SBL_Lik_ch.collect(), SNPs_ch, params.maxp, params.PALM_Tool, likDir)
-    //} else if (params.analysis == "JPALM") {
-    //    J_PALM_ch = Apply_JPALM(SBL_Lik_ch.collect(), SNPs_ch, params.maxp, params.PALM_Tool, likDir)
-    //} else {
-    //    log.info "Analysis parameter must be either PALM or JPALM"
-    //    exit 1
-    //}
+    if (params.analysis == "PALM") {
+        PALM_ch = Apply_PALM(SBL_Lik_ch.collect(), SNPs_ch, params.maxp, params.PALM_Tool, likDir)
+    } else if (params.analysis == "JPALM") {
+        J_PALM_ch = Apply_JPALM(SBL_Lik_ch.collect(), SNPs_ch, params.maxp, params.PALM_Tool, likDir)
+    } else {
+        log.info "Analysis parameter must be either PALM or JPALM"
+        exit 1
+    }
     
 }
 

@@ -153,12 +153,12 @@ process Prepare_Relate_RDS {
 }
 
 workflow {
-    //Mut_ch = Annotate_Mut(params.RelateDir, Chromosomes_ch)
-    //Anc_Mut_ch = Extract_Anc_Mut(Mut_ch.collect(), Chromosomes_ch.flatten(), Populations_ch.flatten(), paramms.RelateDir)
-    //Anc_Mut_ch = Extract_Anc_Mut(POP_CHR_ch, params.RelateDir)
-    //VCF_AF_ch = Extract_VCF_and_AF(params.SampleIDs, params.VCFDir, params.RelateDir, POP_CHR_ch)
+    Mut_ch = Annotate_Mut(params.RelateDir, Chromosomes_ch)
+    Anc_Mut_ch = Extract_Anc_Mut(Mut_ch.collect(), Chromosomes_ch.flatten(), Populations_ch.flatten(), paramms.RelateDir)
+    Anc_Mut_ch = Extract_Anc_Mut(POP_CHR_ch, params.RelateDir)
+    VCF_AF_ch = Extract_VCF_and_AF(params.SampleIDs, params.VCFDir, params.RelateDir, POP_CHR_ch)
     Coal_ch = Extract_coal(params.coal, Populations_ch.flatten(), params.RelateDir)
-    //Relate_RDS_ch = Prepare_Relate_RDS(Anc_Mut_ch.collect(), VCF_AF_ch.collect(), Populations_ch.flatten(), params.RelateDir, params.WorkDir, params.LD_Blocks)
+    Relate_RDS_ch = Prepare_Relate_RDS(Anc_Mut_ch.collect(), VCF_AF_ch.collect(), Populations_ch.flatten(), params.RelateDir, params.WorkDir, params.LD_Blocks)
 }
 
 workflow.onComplete {
